@@ -10,6 +10,51 @@ API Gateway handles user requests and forward them to proper mircro-services. It
 
 ## Development
 
+### Repo Structure
+
+```
+AirSense/
+├── README.md
+├── .gitignore
+├── docker-compose.yml
+├── shared/
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── logger.py
+│   │   ├── config.py
+│   ├── tests/
+│   └── requirements.txt
+├── services/
+│   ├── gateway/     # API Gateway microservice
+│   │   ├── app/
+│   │   │   ├── __init__.py
+│   │   │   ├── routes.py
+│   │   │   ├── config.py
+│   │   ├── Dockerfile
+│   │   ├── requirements.txt
+│   │   └── tests/
+│   │       ├── test_routes.py
+│   └── processor/
+│       ├── processor/
+│       │   ├── __init__.py
+│       │   ├── main.py
+│       │   ├── config.py
+│       ├── Dockerfile
+│       ├── requirements.txt
+│       └── tests/
+│           ├── test_processor.py
+├── tools/
+│   ├── cli_tool/
+│   │   ├── main.py
+│   │   ├── utils.py
+│   │   └── tests/
+│   │       ├── test_cli.py
+└── scripts/
+    ├── start_all.sh
+    ├── deploy.sh
+
+```
+
 ### Python
 
 For developers: please use Python3 version `3.12.8` and usage of `pyenv` and virtual environment is highly recommended.
