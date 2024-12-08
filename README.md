@@ -10,7 +10,7 @@ API Gateway handles user requests and forward them to proper mircro-services. It
 
 ## Development
 
-### Repo Structure
+### Repo Structure (demo only)
 
 ```
 AirSense/
@@ -59,7 +59,7 @@ AirSense/
 
 For developers: please use Python3 version `3.12.8` and usage of `pyenv` and virtual environment is highly recommended.
 
-#### Install Pyenv
+#### Install Python using Pyenv [https://github.com/pyenv/pyenv](https://github.com/pyenv/pyenv)
 
 ```bash
 pyenv install 3.12.8
@@ -72,10 +72,10 @@ python3 -V # Python 3.12.8
 ##### Virtual Environment
 
 ```bash
-cd services/[service]
-python3 -m venv venv
-source venv/bin/activate
-which python3 # [repo]/gateway/venv/bin/python3
+cd services/[service_name]
+python3 -m venv [service_name]
+source [service_name]/bin/activate
+which python3 # [repo_name]/services/[service_name]/bin/python3
 ```
 
 ##### Install Libraries
