@@ -4,9 +4,23 @@
 
 ## Services
 
-### API Gateway
+### AirGateway
 
-API Gateway handles user requests and forward them to proper mircro-services. It has the ability to handle at least 10,000 requests per seconds.
+AirGateway handles users' and administrators' restful API requests and forward them to proper mircro-services (`AirCentral`, `AirCrawler`, `AirStore`). It has the ability to handle at least 10,000 requests per seconds.
+
+### AirCrawler
+
+AirCrawler is scheduled to craw daily ADS-B data from open data resources [https://github.com/adsblol/globe_history_2024](https://github.com/adsblol/globe_history_2024), unzip data, and convert raw json data to database `AirStore`.
+
+- A sample of a processed aircraft data is located at [here](./doc/trace_full_a61d00.json).
+
+### AirCentral
+
+AirCentral is the main processor of AirSense application, and it serves parsing user request, retriving, filtering, and outputing expected data from database `AirStore`.
+
+### AirStore
+
+AirStore is a GraphSQL database aims to store and maintain all flight/aircraft related data and ready for use by other services.
 
 ## Development
 
