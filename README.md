@@ -55,6 +55,16 @@ AirSense/
 
 ```
 
+### Docker
+
+- Attn: `If develope under docker, you dont have to use any python virtual environment mentioned below, as each image has its own environment in docker engine, which is highly recommened.`
+
+```bash
+docker compose build
+
+docker compose up
+```
+
 ### Python
 
 For developers: please use Python3 version `3.12.8` and usage of `pyenv` and virtual environment is highly recommended.
