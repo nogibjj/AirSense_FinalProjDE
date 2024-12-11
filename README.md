@@ -1,12 +1,36 @@
-# AirSense_FinalProjDE
+# AirSense - Insights of Flights
 
-## Architectural Diagram
+## Architectural Design
+
+### Microservices Overview
+
+- `AirGateway` and `AirConnector` are containerized using Docker and run within AWS App Runner.
+- `AirBroker` leverages Databricks to preprocess data and generate final data tables.
+- `AirStore` is a GraphSQL database running on AWS RDS Aurora, designed to store and maintain all flight-related data.
+
+These services work together to form a stable and efficient microservices application.
+
+### Diagram
+
+- insert image here
 
 ## Services
 
-### API Gateway
+### AirGateway
 
-API Gateway handles user requests and forward them to proper mircro-services. It has the ability to handle at least 10,000 requests per seconds.
+`AirGateway` is powered by Flask and aims to handle users' and administrators' restful API requests and forward them to proper mircro-services (`AirConnector`, `AirStore`). It has the ability to handle at least 10,000 requests per seconds.
+
+### AirBroker
+
+`AirBroker` leverages databricks to preprocess data and generate final data tables that will be ready use for `AirGateway`.
+
+### AirConnector
+
+`AirConnector` connectes `AirBroker` and `AirStore`. It transfers data tables from databricks to `AirStore` and ready for query by `AirGateway`.
+
+### AirStore
+
+`AirStore` is a GraphSQL database running on AWS RDS `Aurora` that aims to store and maintain all flights related data and ready for use by other services.
 
 ## Development
 
@@ -17,13 +41,13 @@ AirSense/
 ├── README.md
 ├── .gitignore
 ├── docker-compose.yml
+├── requirements.txt
 ├── shared/
 │   ├── utils/
 │   │   ├── __init__.py
 │   │   ├── logger.py
 │   │   ├── config.py
 │   ├── tests/
-│   └── requirements.txt
 ├── services/
 │   ├── gateway/     # API Gateway microservice
 │   │   ├── app/
@@ -34,21 +58,14 @@ AirSense/
 │   │   ├── requirements.txt
 │   │   └── tests/
 │   │       ├── test_routes.py
-│   └── processor/
-│       ├── processor/
-│       │   ├── __init__.py
-│       │   ├── main.py
-│       │   ├── config.py
+│   └── connector/
+│       ├── main.py
 │       ├── Dockerfile
 │       ├── requirements.txt
 │       └── tests/
-│           ├── test_processor.py
+│           ├── test_connector.py
 ├── tools/
-│   ├── cli_tool/
-│   │   ├── main.py
-│   │   ├── utils.py
-│   │   └── tests/
-│   │       ├── test_cli.py
+│   ├── .keep
 └── scripts/
     ├── start_all.sh
     ├── deploy.sh
@@ -82,10 +99,9 @@ python3 -V # Python 3.12.8
 ##### Virtual Environment
 
 ```bash
-cd services/[service_name]
-python3 -m venv [service_name]
-source [service_name]/bin/activate
-which python3 # [repo_name]/services/[service_name]/bin/python3
+python3 -m venv venv
+source venv/bin/activate
+which python3 # [repo_name]/services/venv/bin/python3
 ```
 
 ##### Install Libraries
@@ -94,10 +110,8 @@ which python3 # [repo_name]/services/[service_name]/bin/python3
 pip install --no-cache-dir -r requirements.txt
 ```
 
-##### Run service
+##### Run
 
 ```python3
-python3 run.py
+python3 shared/tests/connect_aws_rds.py
 ```
-
-### Docker
