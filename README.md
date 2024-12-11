@@ -32,6 +32,8 @@ These services work together to form a stable and efficient microservices applic
 
 `AirStore` is a GraphSQL database running on AWS RDS `Aurora` that aims to store and maintain all flights related data and ready for use by other services.
 
+- For developer: view and manage [AWS Aurora Database](https://us-east-1.console.aws.amazon.com/rds/home?region=us-east-1#database:id=airsense-pg;is-cluster=true)
+
 ## Development
 
 ### Repo Structure (demo only)
@@ -74,17 +76,20 @@ AirSense/
 
 ### Docker
 
-- Attn: `If develope under docker, you dont have to use any python virtual environment mentioned below, as each image has its own environment in docker engine, which is highly recommened.`
+**Attn: If develope under docker, you dont have to use any python virtual environment mentioned below, as each image has its own environment in docker engine, which is highly recommened.**
+
+- Instructions for set up [Docker Engine](https://docs.docker.com/engine/install/) and [Desktop](https://docs.docker.com/desktop/). 
 
 ```bash
 docker compose build
-
 docker compose up
 ```
 
 ### Python
 
-For developers: please use Python3 version `3.12.8` and usage of `pyenv` and virtual environment is highly recommended.
+**Attn: If you would like to test functions locally, please follow instructions below.**
+
+- *please use Python3 version `3.12.8` and usage of `pyenv` and virtual environment is highly recommended.*
 
 #### Install Python using Pyenv [https://github.com/pyenv/pyenv](https://github.com/pyenv/pyenv)
 
