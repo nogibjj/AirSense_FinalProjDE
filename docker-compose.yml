@@ -1,0 +1,42 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: airsense
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  gateway:
+    build:
+      context: ./services/gateway
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=airsense
+    depends_on:
+      - postgres
+
+  connector:
+    build:
+      context: ./services/connector
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=airsense
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
