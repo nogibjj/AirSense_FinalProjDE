@@ -8,6 +8,7 @@ def validate_env_vars():
         "DB_USER",
         "DB_PASSWORD",
         "DB_NAME",
+        "OPENAI_API_KEY"
     ]
     for var in required_vars:
         if not os.getenv(var):
