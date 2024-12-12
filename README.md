@@ -35,6 +35,8 @@ and can be accessed using the following link:
 
 [https://watgt5vczp.us-east-2.awsapprunner.com](https://watgt5vczp.us-east-2.awsapprunner.com)
 
+![runner](/imgs/appRunner.png)
+
 ### AirGateway
 
 `AirGateway` is powered by Flask and aims to handle users' and administrators' restful API requests and forward them to proper mircro-services (`AirConnector`, `AirStore`). It has the ability to handle at least 10,000 requests per seconds.
@@ -108,6 +110,13 @@ AirSense/
 docker compose build
 docker compose up
 ```
+
+#### Container Registry--AWS ECR
+The Docker image is hosted on AWS ECR. 
+AWS Elastic Container Registry (ECR) is a fully managed container registry service provided by AWS. 
+It allows to store, manage, and deploy container images securely.
+
+![ECR](/imgs/ECR.png)
 
 ### Python
 
