@@ -4,7 +4,7 @@
 
 `docker compose up --build`
 
-## Architectural Design
+## System Design
 
 ### Microservices Overview
 
@@ -16,7 +16,7 @@ These services work together to form a stable and efficient microservices applic
 
 ### Diagram
 
-- insert image here
+![AirSense-design](/airsense_diagram.png)
 
 ## Services
 
