@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
@@ -23,7 +25,7 @@ def create_app():
     # Initialize SQLAlchemy with the app
     db.init_app(app)
     # Initialize the OpenAI client
-    client = OpenAI()
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     # Register routes
     from .api_routes import create_api_routes
