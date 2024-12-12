@@ -199,7 +199,7 @@ async def read_service_transfer(session: Session = Depends(get_rds_session)):
 
         # Dynamically construct the SELECT query with ordered columns
         ordered_columns = ", ".join(columns)
-        query = f"SELECT {ordered_columns} FROM service_transfer;"
+        query = f"SELECT {ordered_columns} FROM service_transfer ORDER BY id;"
         result = await run_query(session, query)
 
         # Convert result to a list of dictionaries
