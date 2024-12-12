@@ -27,7 +27,9 @@ def main():
     DB_NAME = os.getenv("DB_NAME")
 
     # Create the SQLAlchemy connection string
-    connection_string = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    connection_string = (
+        f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    )
     # Create an SQLAlchemy engine
     engine = create_engine(connection_string)
     conn = connect_rds(engine)

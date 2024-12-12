@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 engine = None
 SessionLocal = None
 
+
 def validate_env_vars():
     required_vars = [
         "DB_HOST",
@@ -23,12 +24,13 @@ def validate_env_vars():
         if not os.getenv(var):
             raise EnvironmentError(f"Environment variable {var} is not set.")
 
+
 def create_rds_engine():
     global engine, SessionLocal
     validate_env_vars()
 
     RDS_URI = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
-    
+
     engine = create_engine(RDS_URI)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -44,19 +46,26 @@ def create_rds_engine():
         logger.error(f"Error during RDS connection test: {e}")
         raise  # Stop execution if the connection test fails
 
+
 def create_service_transfer_table():
     """
-    Check if the `service_transfer` table exists in the `public` schema, and create it if not.
+    Check if the `service_transfer` table exists in the `public` schema,
+    and create it if not.
     """
     if not engine:
-        raise RuntimeError("Engine is not initialized. Call `create_rds_engine()` first.")
+        raise RuntimeError(
+            "Engine is not initialized. Call `create_rds_engine()` first."
+        )
 
     with engine.connect() as connection:
         inspector = inspect(engine)
         schema = "public"  # Adjust this if using a different schema
-        logger.info(f"Existing tables in schema '{schema}': {inspector.get_table_names(schema=schema)}")
+        logger.info(
+            f"Existing tables in schema '{schema}': "
+            f"{inspector.get_table_names(schema=schema)}"
+        )
 
-        if 'service_transfer' not in inspector.get_table_names(schema=schema):
+        if "service_transfer" not in inspector.get_table_names(schema=schema):
             logger.info("`service_transfer` table does not exist. Creating it now.")
             create_table_query = f"""
             CREATE TABLE {schema}.service_transfer (
@@ -77,10 +86,13 @@ def create_service_transfer_table():
                 raise
         else:
             logger.info("`service_transfer` table already exists.")
-            
+
+
 def get_rds_session():
     if not SessionLocal:
-        raise RuntimeError("SessionLocal is not initialized. Call `create_rds_engine()` first.")
+        raise RuntimeError(
+            "SessionLocal is not initialized. Call `create_rds_engine()` first."
+        )
     session = SessionLocal()
     try:
         yield session

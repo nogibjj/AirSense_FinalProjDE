@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 engine = None
 SessionLocal = None
 
+
 def validate_env_vars():
     required_vars = [
         "DATABRICKS_HOST",
@@ -24,10 +25,11 @@ def validate_env_vars():
         if not os.getenv(var):
             raise EnvironmentError(f"Environment variable {var} is not set.")
 
+
 def create_databricks_engine():
     global engine, SessionLocal
     validate_env_vars()
-    
+
     DATABRICKS_URI = URL.create(
         drivername="databricks",
         username="token",
@@ -54,9 +56,12 @@ def create_databricks_engine():
         logger.error(f"Error during Databricks connection test: {e}")
         raise  # Stop execution if the connection test fails
 
+
 def get_db_session():
     if not SessionLocal:
-        raise RuntimeError("SessionLocal is not initialized. Call `create_databricks_engine()` first.")
+        raise RuntimeError(
+            "SessionLocal is not initialized. Call `create_databricks_engine()` first."
+        )
     session = SessionLocal()
     try:
         yield session

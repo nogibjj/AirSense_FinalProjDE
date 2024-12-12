@@ -42,7 +42,7 @@ def create_busiest_airports_by_delays_table():
     ORDER BY Total_Avg_Delay DESC
     """
     busiest_airports = spark.sql(query)
-    busiest_airports.write.format("delta").mode("overwrite").saveAsTable("busiest_airports_by_delays4")
+    busiest_airports.write.format("delta").mode("overwrite").saveAsTable("busiest_airports_by_delays")
     print("busiest_airports_by_delays table created successfully.")
 
 

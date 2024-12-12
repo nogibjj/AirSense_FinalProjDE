@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -14,7 +14,10 @@ from contextlib import asynccontextmanager
 import asyncio
 import pandas as pd
 
-executor = ThreadPoolExecutor(max_workers=20)  # Configure max workers based on your needs
+executor = ThreadPoolExecutor(
+    max_workers=20
+)  # Configure max workers based on your needs
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -47,7 +50,8 @@ app.mount("/ui", StaticFiles(directory="ui"), name="ui")
 @app.get("/")
 async def root():
     return FileResponse("ui/index.html")
-    
+
+
 @app.get("/hello")
 def read_hello():
     return {"version": "v0.1"}
@@ -68,7 +72,9 @@ async def drop_table_if_exists(table_name: str, rds_session: Session):
     print(f"Table {table_name} dropped from RDS (if it existed).")
 
 
-async def fetch_data_from_databricks(table_name: str, chunk_size: int, offset: int, db_session: Session):
+async def fetch_data_from_databricks(
+    table_name: str, chunk_size: int, offset: int, db_session: Session
+):
     """Fetch a chunk of data from Databricks."""
     query = f"SELECT * FROM {table_name} LIMIT {chunk_size} OFFSET {offset}"
     return await run_query(db_session, query)
@@ -91,10 +97,7 @@ def record_table_transfer(table_name: str, rds_session: Session):
             last_transfer_date = NOW(),
             transfer_count = service_transfer.transfer_count + 1;
     """
-    rds_session.execute(
-        text(transfer_record_query),
-        {"tablename": table_name}
-    )
+    rds_session.execute(text(transfer_record_query), {"tablename": table_name})
     rds_session.commit()
 
 
@@ -102,11 +105,12 @@ def record_table_transfer(table_name: str, rds_session: Session):
 class TransferRequest(BaseModel):
     table_name: str
 
+
 @app.post("/transfer_table")
 async def transfer_table(
     request: TransferRequest,
     db_session: Session = Depends(get_db_session),
-    rds_session: Session = Depends(get_rds_session)
+    rds_session: Session = Depends(get_rds_session),
 ):
     try:
         # Use the table_name from the request body
@@ -127,7 +131,9 @@ async def transfer_table(
 
         while True:
             # Fetch data in chunks
-            databricks_result = await fetch_data_from_databricks(table_name, chunk_size, offset, db_session)
+            databricks_result = await fetch_data_from_databricks(
+                table_name, chunk_size, offset, db_session
+            )
 
             if not databricks_result:  # Break if no more rows
                 break
@@ -145,7 +151,7 @@ async def transfer_table(
                 con=rds_session.bind,
                 if_exists="append",  # Append as the table was dropped initially
                 index=False,
-                method="multi"
+                method="multi",
             )
 
             total_rows_transferred += len(df)
@@ -164,7 +170,9 @@ async def transfer_table(
         rds_session.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error during table transfer: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error during table transfer: {str(e)}"
+        )
 
 
 @app.get("/dbstatus")
@@ -187,15 +195,23 @@ async def read_rdsstatus(session: Session = Depends(get_rds_session)):
         return {"RDS is connected": True, "result": str(result)}
     except Exception as e:
         return {"RDS is connected": False, "error": str(e)}
-    
+
+
 @app.get("/service_transfer")
 async def read_service_transfer(session: Session = Depends(get_rds_session)):
     """Fetch the service transfer table."""
     try:
         # Fetch column names from information_schema
-        columns_query = "SELECT column_name FROM information_schema.columns WHERE table_name = 'service_transfer' ORDER BY ordinal_position;"
+        columns_query = (
+            "SELECT column_name "
+            "FROM information_schema.columns "
+            "WHERE table_name = 'service_transfer' "
+            "ORDER BY ordinal_position;"
+        )
         columns_result = await run_query(session, columns_query)
-        columns = [col[0] for col in columns_result]  # Column names in the correct order
+        columns = [
+            col[0] for col in columns_result
+        ]  # Column names in the correct order
 
         # Dynamically construct the SELECT query with ordered columns
         ordered_columns = ", ".join(columns)
@@ -205,7 +221,11 @@ async def read_service_transfer(session: Session = Depends(get_rds_session)):
         # Convert result to a list of dictionaries
         table_data = [dict(zip(columns, row)) for row in result]
 
-        return {"data": table_data, "columns": columns, "count": len(result), "success": True}
+        return {
+            "data": table_data,
+            "columns": columns,
+            "count": len(result),
+            "success": True,
+        }
     except Exception as e:
         return {"error": str(e)}
-
