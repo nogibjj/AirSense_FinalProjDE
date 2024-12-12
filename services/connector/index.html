@@ -3,18 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database Transfer</title>
+    <title>AirConnector Admin</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            padding: 0;
+            display: flex;
+        }
+        .sidebar {
+            width: 200px;
+            margin-right: 20px;
+            border-right: 1px solid #ccc;
+            padding-right: 10px;
         }
         .container {
-            max-width: 600px;
-            margin: 0 auto;
+            flex: 1;
         }
-        h1 {
+        h1, h2 {
             text-align: center;
         }
         form {
@@ -46,9 +51,37 @@
             border-radius: 4px;
             background-color: #f9f9f9;
         }
+        .db-status {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .db-status span {
+            margin-left: 10px;
+        }
+        .dot {
+            height: 15px;
+            width: 15px;
+            border-radius: 50%;
+            display: inline-block;
+            background-color: gray; /* Default color */
+        }
     </style>
 </head>
 <body>
+    <div class="sidebar">
+        <h2>DB Status</h2>
+        <div class="db-status">
+            <div id="databricks-dot" class="dot"></div>
+            <span>Databricks</span>
+        </div>
+        <div class="db-status">
+            <div id="rds-dot" class="dot"></div>
+            <span>RDS</span>
+        </div>
+        <button id="check-status">Check Status</button>
+    </div>
+
     <div class="container">
         <h1>Database Transfer</h1>
         <form id="transfer-form">
@@ -62,6 +95,52 @@
     </div>
 
     <script>
+        const databricksDot = document.getElementById("databricks-dot");
+        const rdsDot = document.getElementById("rds-dot");
+        const checkStatusButton = document.getElementById("check-status");
+
+        // Function to update the dot's color
+        function updateDot(dotElement, status) {
+            if (status === "connected") {
+                dotElement.style.backgroundColor = "green";
+            } else if (status === "disconnected") {
+                dotElement.style.backgroundColor = "red";
+            } else {
+                dotElement.style.backgroundColor = "gray";
+            }
+        }
+
+        // Event listener for the "Check Status" button
+        checkStatusButton.addEventListener("click", async () => {
+            // Check Databricks status
+            try {
+                const databricksResponse = await fetch("/dbstatus");
+                const databricksResult = await databricksResponse.json();
+                if (databricksResult["Databricks is connected"]) {
+                    updateDot(databricksDot, "connected");
+                } else {
+                    updateDot(databricksDot, "disconnected");
+                }
+            } catch (error) {
+                updateDot(databricksDot, "disconnected");
+                console.error("Error checking Databricks status:", error);
+            }
+
+            // Check RDS status
+            try {
+                const rdsResponse = await fetch("/rdsstatus");
+                const rdsResult = await rdsResponse.json();
+                if (rdsResult["RDS is connected"]) {
+                    updateDot(rdsDot, "connected");
+                } else {
+                    updateDot(rdsDot, "disconnected");
+                }
+            } catch (error) {
+                updateDot(rdsDot, "disconnected");
+                console.error("Error checking RDS status:", error);
+            }
+        });
+
         const form = document.getElementById("transfer-form");
         const statusDiv = document.getElementById("status");
 
