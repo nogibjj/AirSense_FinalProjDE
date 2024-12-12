@@ -40,10 +40,18 @@ async def transfer_table(
         if not table_name:
             raise HTTPException(status_code=400, detail="Table name is required.")
         
-        # Step 2: Fetch data in chunks from Databricks
+        # Step 2: Drop the table in RDS if it exists
+        drop_query = f"DROP TABLE IF EXISTS {table_name}"
+        rds_session.execute(text(drop_query))
+        rds_session.commit()
+        print(f"Table {table_name} dropped from RDS (if it existed).")
+
+        # Step 3: Fetch data in chunks from Databricks
         chunk_size = 5000
         offset = 0
         total_rows_transferred = 0
+        column_names = None
+
         while True:
             query = f"SELECT * FROM {table_name} LIMIT {chunk_size} OFFSET {offset}"
             databricks_result = await run_query(db_session, query)
@@ -52,7 +60,7 @@ async def transfer_table(
                 break
 
             # Get column names for the first batch
-            if offset == 0:
+            if column_names is None:
                 columns_query = f"DESCRIBE {table_name}"
                 databricks_columns = await run_query(db_session, columns_query)
                 column_names = [col[0] for col in databricks_columns]
@@ -60,40 +68,14 @@ async def transfer_table(
             # Convert batch to DataFrame
             df = pd.DataFrame(databricks_result, columns=column_names)
 
-            # Step 3: Create table schema in RDS if not exists
-            if offset == 0:
-                metadata = MetaData(bind=rds_session.bind)
-                table = Table(
-                    table_name,
-                    metadata,
-                    autoload=False,
-                    autoload_with=rds_session.bind,
-                )
-                if not table.exists():
-                    df.to_sql(
-                        table_name,
-                        con=rds_session.bind,
-                        if_exists="replace",
-                        index=False,
-                        method="multi"
-                    )
-                else:
-                    df.to_sql(
-                        table_name,
-                        con=rds_session.bind,
-                        if_exists="append",
-                        index=False,
-                        method="multi"
-                    )
-            else:
-                # Append subsequent chunks
-                df.to_sql(
-                    table_name,
-                    con=rds_session.bind,
-                    if_exists="append",
-                    index=False,
-                    method="multi"
-                )
+            # Step 4: Write data to RDS
+            df.to_sql(
+                table_name,
+                con=rds_session.bind,
+                if_exists="append",  # Append as the table was dropped initially
+                index=False,
+                method="multi"
+            )
 
             total_rows_transferred += len(df)
             offset += chunk_size
@@ -106,3 +88,22 @@ async def transfer_table(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during table transfer: {str(e)}")
+
+
+@app.get("/dbstatus")
+async def read_dbstatus(session: Session = Depends(get_db_session)):
+    try:
+        query = "SELECT version();"
+        result = await run_query(session, query)
+        return {"Databricks is connected": True, "result": str(result)}
+    except Exception as e:
+        return {"Databricks is connected": False, "error": str(e)}
+
+@app.get("/rdsstatus")
+async def read_rdsstatus(session: Session = Depends(get_rds_session)):
+    try:
+        query = "SELECT version();"
+        result = await run_query(session, query)
+        return {"RDS is connected": True, "result": str(result)}
+    except Exception as e:
+        return {"RDS is connected": False, "error": str(e)}
