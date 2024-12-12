@@ -73,9 +73,30 @@
             messageElement.style.margin = '10px 0';
             messageElement.style.padding = '10px';
             messageElement.style.borderRadius = '5px';
-            messageElement.style.color = type === 'user' ? '#000' : '#fff';
-            messageElement.style.backgroundColor = type === 'user' ? '#f4f4f9' : '#4CAF50';
-            messageElement.textContent = content;
+            messageElement.style.display = 'flex';
+            messageElement.style.alignItems = 'center';
+
+            const icon = document.createElement('span');
+            icon.style.margin = '0 10px';
+            icon.textContent = type === 'user' ? '👤' : '🤖';
+
+            const messageContent = document.createElement('div');
+            messageContent.style.flex = '1';
+            messageContent.style.color = type === 'user' ? '#000' : '#fff';
+            messageContent.style.backgroundColor = type === 'user' ? '#f4f4f9' : '#4CAF50';
+            messageContent.style.padding = '10px';
+            messageContent.style.borderRadius = '5px';
+
+            messageContent.textContent = content;
+
+            if (type === 'user') {
+                messageElement.appendChild(messageContent);
+                messageElement.appendChild(icon);
+            } else {
+                messageElement.appendChild(icon);
+                messageElement.appendChild(messageContent);
+            }
+
             chatBox.appendChild(messageElement);
             chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
         }
