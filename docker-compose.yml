@@ -16,9 +16,16 @@ services:
   connector:
     build:
       context: ./services/connector
+    ports:
+      - "8000:8000"
     environment:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
+      - DATABRICKS_HOST=${DATABRICKS_HOST}
+      - DATABRICKS_PATH=${DATABRICKS_PATH}
+      - DATABRICKS_TOKEN=${DATABRICKS_TOKEN}
+      - DATABRICKS_CATALOG=${DATABRICKS_CATALOG}
+      - DATABRICKS_SCHEMA=${DATABRICKS_SCHEMA}
