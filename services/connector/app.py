@@ -1,6 +1,5 @@
-import logging
 from fastapi import FastAPI, HTTPException, Depends
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -41,11 +40,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount the '/ui' folder as the static files directory
+app.mount("/ui", StaticFiles(directory="ui"), name="ui")
+
 # Serve the HTML file
-@app.get("/", response_class=HTMLResponse)
-def read_admin_ui():
-    with open("index.html", "r") as file:
-        return file.read()
+@app.get("/")
+async def root():
+    return FileResponse("ui/index.html")
     
 @app.get("/hello")
 def read_hello():
@@ -191,15 +192,15 @@ async def read_rdsstatus(session: Session = Depends(get_rds_session)):
 async def read_service_transfer(session: Session = Depends(get_rds_session)):
     """Fetch the service transfer table."""
     try:
-        # Fetch the data
-        query = f"SELECT * FROM service_transfer;"
-        result = await run_query(session, query)
-
-        # Fetch column names
-        columns_query = f"SELECT column_name FROM information_schema.columns WHERE table_name = 'service_transfer';"
-        
+        # Fetch column names from information_schema
+        columns_query = "SELECT column_name FROM information_schema.columns WHERE table_name = 'service_transfer' ORDER BY ordinal_position;"
         columns_result = await run_query(session, columns_query)
-        columns = [col[0] for col in columns_result]
+        columns = [col[0] for col in columns_result]  # Column names in the correct order
+
+        # Dynamically construct the SELECT query with ordered columns
+        ordered_columns = ", ".join(columns)
+        query = f"SELECT {ordered_columns} FROM service_transfer;"
+        result = await run_query(session, query)
 
         # Convert result to a list of dictionaries
         table_data = [dict(zip(columns, row)) for row in result]
@@ -207,3 +208,4 @@ async def read_service_transfer(session: Session = Depends(get_rds_session)):
         return {"data": table_data, "columns": columns, "count": len(result), "success": True}
     except Exception as e:
         return {"error": str(e)}
+

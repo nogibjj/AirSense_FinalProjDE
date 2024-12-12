@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirConnector Admin</title>
+    <link rel="stylesheet" href="/ui/style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>DB Status</h2>
+        <div class="db-status">
+            <div id="databricks-dot" class="dot"></div>
+            <span>Databricks</span>
+        </div>
+        <div class="db-status">
+            <div id="rds-dot" class="dot"></div>
+            <span>RDS</span>
+        </div>
+        <button id="check-status">Check Status</button>
+    </div>
+
+    <div class="container">
+        <h1>Service Transfer Table</h1>
+        <button id="update-table">Update Table</button>
+        <table id="service-transfer-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Table Name</th>
+                    <th>Last Transfer Date</th>
+                    <th>Transfer Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="4">No data available. Click "Update Table" to load data.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script src="/ui/script.js"></script>
+</body>
+</html>
