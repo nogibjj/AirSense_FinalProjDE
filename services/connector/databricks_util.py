@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 import os
 
@@ -14,9 +14,19 @@ SessionLocal = None
 
 def create_databricks_engine():
     global engine, SessionLocal
-    connect_args = {"check_same_thread": False}
-    engine = create_engine(DATABRICKS_URI, connect_args=connect_args)
+    engine = create_engine(DATABRICKS_URI)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+    # Test the connection
+    try:
+        with engine.connect() as connection:
+            result = connection.execute(text("SELECT 1"))
+            if result:
+                print("Connection to Databricks is successful.", result)
+            else:
+                print("Connection to Databricks failed.")
+    except Exception as e:
+        print(f"Error connecting to Databricks: {e}")
 
 def get_db_session():
     session = SessionLocal()

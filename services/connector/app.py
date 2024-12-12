@@ -1,8 +1,9 @@
-
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
+from sqlalchemy import text
 from sqlalchemy.orm import Session
-from databricks import get_db_session, create_databricks_engine
+from databricks_util import get_db_session, create_databricks_engine
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -17,7 +18,12 @@ app = FastAPI(lifespan=lifespan)
 def read_root():
     return {"Hello": "World"}
 
-@app.get("/query")
-def run_query(query: str, session: Session = Depends(get_db_session)):
-    results = session.execute("SHOW TABLES").fetchall()
-    return results
+@app.get("/dbstatus")
+def read_dbstatus(session: Session = Depends(get_db_session)):
+    try:
+        query = session.execute(text("SELECT * FROM airline_performance LIMIT 5"))
+        result = query.fetchall()
+
+        return {"Databricks is connected": True, "result": str(result)}
+    except Exception as e:
+        return {"Databricks is connected": False, "error": str(e)}
