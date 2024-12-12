@@ -8,11 +8,12 @@ def create_api_routes(db):
     def dynamic_query():
         """
         Execute a dynamic SQL query based on the query string parameters.
-        e.g. /api/dynamic_query?table_name=airline_performance&limit=5&where=column1:value1
+        e.g. /api/dynamic_query?table_name=airline_performance&columns=col1,col2&limit=5&where=column1:value1
         """
         try:
             # Retrieve parameters from the query string
             table_name = request.args.get("table_name")
+            columns = request.args.get("columns", "*")
             where_clause = request.args.get("where")
             order_by = request.args.get("order_by")
             limit = request.args.get("limit", type=int)
@@ -21,7 +22,7 @@ def create_api_routes(db):
                 return jsonify({"message": "Parameter 'table_name' is required!"}), 400
 
             # Build the dynamic SQL query
-            query = f"SELECT * FROM {table_name}"
+            query = f"SELECT {columns} FROM {table_name}"
 
             if where_clause:
                 # Process where_clause with proper quoting for column names
