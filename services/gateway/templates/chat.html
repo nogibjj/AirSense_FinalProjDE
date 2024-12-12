@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Chat{% endblock %}
+
+{% block content %}
+    <h1>Chatbot</h1>
+
+    <div id="chat-container" style="max-width: 1000px; margin: 20px auto; border: 1px solid #4CAF50; border-radius: 5px;">
+        <div id="chat-box" style="height: 350px; overflow-y: auto; border-bottom: 1px solid #ddd; padding: 10px; background-color: #f9f9f9;">
+            <!-- Welcome Message -->
+            <div style="text-align: center; margin-top: 50px; color: #555; font-size: 18px;">
+                Welcome to Chatbot! I'll answer your questions to the best of my ability.
+            </div>
+        </div>
+
+        <!-- Loading Icon -->
+        <div id="loading-icon" style="display: none; text-align: center; margin: 10px;">
+            <span style="font-size: 24px;">⏳</span>
+        </div>
+
+
+        <div id="input-container" style="display: flex; padding: 10px;">
+            <input type="text" id="message-input" placeholder="Type your message..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;">
+            <button id="send-button" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-size: 16px; margin-left: 10px;">Send  ↵</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const loadingIcon = document.getElementById('loading-icon');
+
+        function sendMessage() {
+            const userMessage = messageInput.value.trim();
+            if (!userMessage) return;
+
+            // Display user's message
+            addMessage(userMessage, 'user');
+
+            // Clear the input box
+            messageInput.value = '';
+
+            // Show the loading icon
+            loadingIcon.style.display = 'block';
+
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userMessage }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.reply) {
+                        // Display bot's reply
+                        addMessage(data.reply, 'bot');
+                    } else {
+                        addMessage('Error: ' + data.error, 'bot');
+                    }
+                })
+                .catch(() => {
+                    addMessage('Error: Unable to contact server', 'bot');
+                })
+                .finally(() => {
+                    // Hide the loading icon
+                    loadingIcon.style.display = 'none';
+                });
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+
+        messageInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function addMessage(content, type) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${type}`;
+            messageElement.style.margin = '10px 0';
+            messageElement.style.padding = '10px';
+            messageElement.style.borderRadius = '5px';
+            messageElement.style.display = 'flex';
+            messageElement.style.alignItems = 'center';
+
+            const icon = document.createElement('span');
+            icon.style.margin = '0 10px';
+            icon.textContent = type === 'user' ? '👤' : '🤖';
+
+            const messageContent = document.createElement('div');
+            messageContent.style.flex = '1';
+            messageContent.style.color = type === 'user' ? '#000' : '#fff';
+            messageContent.style.backgroundColor = type === 'user' ? '#f4f4f9' : '#4CAF50';
+            messageContent.style.padding = '10px';
+            messageContent.style.borderRadius = '5px';
+
+            messageContent.textContent = content;
+
+            if (type === 'user') {
+                messageElement.appendChild(messageContent);
+                messageElement.appendChild(icon);
+            } else {
+                messageElement.appendChild(icon);
+                messageElement.appendChild(messageContent);
+            }
+
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+        }
+    </script>
+{% endblock %}

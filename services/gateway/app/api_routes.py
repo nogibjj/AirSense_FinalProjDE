@@ -1,8 +1,39 @@
+import os
 from flask import Blueprint, jsonify, request
 from sqlalchemy import text, inspect
 
-def create_api_routes(db):
+def create_api_routes(db, client):
     api_bp = Blueprint('api', __name__, url_prefix='/api')
+
+    @api_bp.route("/chat", methods=["POST"])
+    def chat():
+        """
+        Handle chat requests and return responses from OpenAI.
+        """
+        user_message = request.json.get("message", "")
+        if not user_message:
+            return jsonify({"message": "Parameter 'message' is required!"}), 400
+
+        try:
+            # Define constraints for response
+            constraints = (
+                "Respond in plain text only, without any markdown. "
+                "The response must be concise and limited to 100 words or less."
+            )
+
+            # Call OpenAI API
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": constraints},
+                    {"role": "user", "content": user_message}
+                ]
+            )
+            chat_response = response.choices[0].message.content
+            return jsonify({"reply": chat_response})
+        except Exception as e:
+            return jsonify({"message": "Failed to fetch response!", "error": str(e)}), 500
+
 
     @api_bp.route("/advanced_search", methods=["POST"])
     def advanced_search():

@@ -10,6 +10,10 @@ def create_html_routes(db):
     @html_bp.route("/explorer", methods=["GET"])
     def show_explorer():
         return render_template("explorer.html")
+    
+    @html_bp.route("/chat", methods=["GET"])
+    def show_chat():
+        return render_template("chat.html")
 
     @html_bp.route("/about", methods=["GET"])
     def show_about():
