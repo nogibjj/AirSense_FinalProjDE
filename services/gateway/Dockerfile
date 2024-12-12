@@ -14,4 +14,4 @@ COPY . .
 EXPOSE 5000
 
 # Set the entry point to run the app
-CMD ["python3", "run.py"]
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]

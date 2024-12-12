@@ -22,7 +22,7 @@ app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"version": "v0.1"}
 
 async def run_query(session: Session, query: str):
     loop = asyncio.get_event_loop()

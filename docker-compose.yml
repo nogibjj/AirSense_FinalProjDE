@@ -3,7 +3,7 @@ services:
     build:
       context: ./services/gateway
     ports:
-      - "5000:5000"
+      - "80:5000"
     environment:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
