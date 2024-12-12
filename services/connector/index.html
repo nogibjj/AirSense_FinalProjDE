@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Transfer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Database Transfer</h1>
+        <form id="transfer-form">
+            <label for="table-name">Table Name:</label>
+            <input type="text" id="table-name" name="table_name" placeholder="Enter table name" required>
+            <button type="submit">Trigger Transfer</button>
+        </form>
+        <div class="status" id="status">
+            <strong>Status:</strong> Waiting for action...
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById("transfer-form");
+        const statusDiv = document.getElementById("status");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const tableName = document.getElementById("table-name").value;
+
+            // Display a loading message
+            statusDiv.innerHTML = `<strong>Status:</strong> Initiating transfer for table <em>${tableName}</em>...`;
+
+            try {
+                // Send POST request to trigger transfer
+                const response = await fetch("/transfer_table", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ table_name: tableName }), // Send as JSON
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    statusDiv.innerHTML = `<strong>Status:</strong> Transfer successful!<br>
+                        Table Name: ${result.table_name}<br>
+                        Rows Transferred: ${result.rows_transferred}`;
+                } else {
+                    statusDiv.innerHTML = `<strong>Status:</strong> Transfer failed. ${result.detail}`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<strong>Status:</strong> Transfer failed. Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

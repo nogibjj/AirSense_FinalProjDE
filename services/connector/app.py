@@ -1,4 +1,9 @@
 from fastapi import FastAPI, HTTPException, Depends
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -28,9 +33,21 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.get("/")
-def read_root():
+# Serve the HTML file
+@app.get("/", response_class=HTMLResponse)
+def read_admin_ui():
+    with open("index.html", "r") as file:
+        return file.read()
+    
+@app.get("/hello")
+def read_hello():
     return {"version": "v0.1"}
 
 
@@ -79,13 +96,20 @@ def record_table_transfer(table_name: str, rds_session: Session):
     rds_session.commit()
 
 
+# Define a request model for the JSON body
+class TransferRequest(BaseModel):
+    table_name: str
+
 @app.post("/transfer_table")
 async def transfer_table(
-    table_name: str,
+    request: TransferRequest,
     db_session: Session = Depends(get_db_session),
     rds_session: Session = Depends(get_rds_session)
 ):
     try:
+        # Use the table_name from the request body
+        table_name = request.table_name
+
         # Validate table name
         if not table_name:
             raise HTTPException(status_code=400, detail="Table name is required.")
