@@ -15,12 +15,32 @@
         <button id="open-api" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-size: 16px;">Open API in New Tab</button>
     </div>
 
+    <div style="display: flex; align-items: center; justify-content: center; max-width: 800px; margin: 10px auto;">
+        <label for="limit-select" style="margin-right: 10px; font-size: 16px;">Limit Rows:</label>
+        <select id="limit-select" style="max-width: 300px; padding: 5px; font-size: 16px;">
+            <option value="1">1</option>
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+            <option value="500">500</option>
+            <option value="1000">1000</option>
+        </select>
+    </div>
+    
+
     <table id="data-table" border="1" style="margin: 20px auto; width: 90%; max-width: 800px; border-collapse: collapse; text-align: left;">
         <thead id="table-header" style="background-color: #4CAF50; color: #000;"></thead>
         <tbody id="table-body"></tbody>
     </table>
 
     <script>
+        // Reset table selection on page refresh
+        window.onload = function() {
+            document.getElementById('table-select').selectedIndex = 0;
+        };
+
         // Populate table list
         fetch('/api/dynamic_query?table_name=information_schema.tables&columns=table_name&where=table_schema:public')
             .then(response => response.json())
@@ -39,9 +59,10 @@
         const apiEndpoint = document.getElementById('api-endpoint-link');
         const openApiButton = document.getElementById('open-api');
 
-        document.getElementById('table-select').addEventListener('change', function () {
-            const tableName = this.value;
-            const endpoint = `/api/dynamic_query?table_name=${tableName}`;
+        const fetchTableData = () => {
+            const tableName = document.getElementById('table-select').value;
+            const limit = document.getElementById('limit-select').value;
+            const endpoint = `/api/dynamic_query?table_name=${tableName}&limit=${limit}`;
             apiEndpoint.textContent = endpoint;
             apiEndpoint.style.color = '#4CAF50';
             openApiButton.onclick = () => window.open(endpoint, '_blank');
@@ -90,6 +111,9 @@
                     }
                 })
                 .catch(error => console.error("Error fetching table data:", error));
-        });
+        };
+
+        document.getElementById('table-select').addEventListener('change', fetchTableData);
+        document.getElementById('limit-select').addEventListener('change', fetchTableData);
     </script>
 {% endblock %}
