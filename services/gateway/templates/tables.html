@@ -1,49 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database Tables</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 0;
-            background-color: #f9f9f9;
-        }
-        h1 {
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ccc;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-    </style>
-</head>
-<body>
-    <h1>Database Tables</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Table Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for table in tables %}
-            <tr>
-                <td>{{ table }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Table List{% endblock %}
+
+{% block content %}
+
+    <h1>Table List</h1>
+    <ul id="table-list">
+        <!-- Table list will be populated here -->
+    </ul>
+
+    <div class="api-link">
+        <p><a href="/api/dynamic_query?table_name=information_schema.tables&columns=table_name&where=table_schema:public" target="_blank">View API Endpoint</a></p>
+        <p>API: /api/dynamic_query?table_name=information_schema.tables&columns=table_name&where=table_schema:public </p>
+    </div>
+
+    <script>
+        fetch('/api/dynamic_query?table_name=information_schema.tables&columns=table_name&where=table_schema:public')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const tableList = document.getElementById('table-list');
+                if (data.length === 0) {
+                    const noData = document.createElement('li');
+                    noData.textContent = 'No tables found';
+                    tableList.appendChild(noData);
+                } else {
+                    data.forEach(table => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = table.table_name;
+                        tableList.appendChild(listItem);
+                    });
+                }
+            })
+            .catch(error => {
+                const errorMessage = document.createElement('p');
+                errorMessage.textContent = `Error fetching tables: ${error.message}`;
+                errorMessage.classList.add('error');
+                document.body.appendChild(errorMessage);
+            });
+    </script>
+{% endblock %}

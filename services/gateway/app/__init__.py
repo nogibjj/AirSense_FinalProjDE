@@ -12,7 +12,7 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 
 def create_app():
-    app = Flask(__name__, template_folder="../templates")
+    app = Flask(__name__, template_folder="../templates", static_folder="../static")
     # Retrieve PostgreSQL URI from environment variables or another validation source
     pg_uri = validate_env_vars()
     # Configure the PostgreSQL database connection
