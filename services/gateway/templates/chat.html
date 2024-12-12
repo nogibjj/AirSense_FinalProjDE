@@ -7,7 +7,10 @@
 
     <div id="chat-container" style="max-width: 1000px; margin: 20px auto; border: 1px solid #4CAF50; border-radius: 5px;">
         <div id="chat-box" style="height: 350px; overflow-y: auto; border-bottom: 1px solid #ddd; padding: 10px; background-color: #f9f9f9;">
-            <!-- Chat messages will appear here -->
+            <!-- Welcome Message -->
+            <div style="text-align: center; margin-top: 50px; color: #555; font-size: 18px;">
+                Welcome to Chat Bot! I'll answer your questions to the best of my ability.
+            </div>
         </div>
 
         <!-- Loading Icon -->
@@ -28,7 +31,7 @@
         const sendButton = document.getElementById('send-button');
         const loadingIcon = document.getElementById('loading-icon');
 
-        sendButton.addEventListener('click', async () => {
+        function sendMessage() {
             const userMessage = messageInput.value.trim();
             if (!userMessage) return;
 
@@ -41,29 +44,36 @@
             // Show the loading icon
             loadingIcon.style.display = 'block';
 
-            try {
-                // Send message to the Flask backend
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ message: userMessage }),
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userMessage }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.reply) {
+                        // Display bot's reply
+                        addMessage(data.reply, 'bot');
+                    } else {
+                        addMessage('Error: ' + data.error, 'bot');
+                    }
+                })
+                .catch(() => {
+                    addMessage('Error: Unable to contact server', 'bot');
+                })
+                .finally(() => {
+                    // Hide the loading icon
+                    loadingIcon.style.display = 'none';
                 });
+        }
 
-                const data = await response.json();
+        sendButton.addEventListener('click', sendMessage);
 
-                if (data.reply) {
-                    // Display bot's reply
-                    addMessage(data.reply, 'bot');
-                } else {
-                    addMessage('Error: ' + data.error, 'bot');
-                }
-            } catch (error) {
-                addMessage('Error: Unable to contact server', 'bot');
-            } finally {
-                // Hide the loading icon
-                loadingIcon.style.display = 'none';
+        messageInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                sendMessage();
             }
         });
 
