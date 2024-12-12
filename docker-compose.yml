@@ -16,6 +16,8 @@ services:
   connector:
     build:
       context: ./services/connector
+    ports:
+      - "8001:8000"
     environment:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}

@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, inspect
 from sqlalchemy.orm import sessionmaker
 import os
 import logging
@@ -44,6 +44,40 @@ def create_rds_engine():
         logger.error(f"Error during RDS connection test: {e}")
         raise  # Stop execution if the connection test fails
 
+def create_service_transfer_table():
+    """
+    Check if the `service_transfer` table exists in the `public` schema, and create it if not.
+    """
+    if not engine:
+        raise RuntimeError("Engine is not initialized. Call `create_rds_engine()` first.")
+
+    with engine.connect() as connection:
+        inspector = inspect(engine)
+        schema = "public"  # Adjust this if using a different schema
+        logger.info(f"Existing tables in schema '{schema}': {inspector.get_table_names(schema=schema)}")
+
+        if 'service_transfer' not in inspector.get_table_names(schema=schema):
+            logger.info("`service_transfer` table does not exist. Creating it now.")
+            create_table_query = f"""
+            CREATE TABLE {schema}.service_transfer (
+                id SERIAL PRIMARY KEY,
+                tablename VARCHAR(255) NOT NULL UNIQUE,
+                last_transfer_date TIMESTAMP NOT NULL,
+                transfer_count INT NOT NULL DEFAULT 1
+            );
+            """
+            transaction = connection.begin()
+            try:
+                connection.execute(text(create_table_query))
+                transaction.commit()
+                logger.info("`service_transfer` table created successfully.")
+            except Exception as e:
+                transaction.rollback()
+                logger.error(f"Error creating `service_transfer` table: {e}")
+                raise
+        else:
+            logger.info("`service_transfer` table already exists.")
+            
 def get_rds_session():
     if not SessionLocal:
         raise RuntimeError("SessionLocal is not initialized. Call `create_rds_engine()` first.")
