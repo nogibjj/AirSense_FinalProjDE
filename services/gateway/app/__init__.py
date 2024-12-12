@@ -22,7 +22,10 @@ def create_app():
     db.init_app(app)
 
     # Register routes
-    from .routes import register_routes
-    register_routes(app, db)
+    from .api_routes import create_api_routes
+    from .html_routes import create_html_routes
+    # Register Blueprints
+    app.register_blueprint(create_api_routes(db))
+    app.register_blueprint(create_html_routes(db))
 
     return app
