@@ -1,4 +1,15 @@
 # AirSense - Insights of Flights
+[![Install](https://github.com/nogibjj/airsense/actions/workflows/install.yml/badge.svg)](https://github.com/nogibjj/airsense/actions/workflows/install.yml)
+[![Lint](https://github.com/nogibjj/airsense/actions/workflows/lint.yml/badge.svg)](https://github.com/nogibjj/airsense/actions/workflows/lint.yml)
+[![Format](https://github.com/nogibjj/airsense/actions/workflows/format.yml/badge.svg)](https://github.com/nogibjj/airsense/actions/workflows/format.yml)
+[![Test](https://github.com/nogibjj/airsense/actions/workflows/test.yml/badge.svg)](https://github.com/nogibjj/airsense/actions/workflows/test.yml)
+
+## [YouTube Demo Video](https://youtu.be/FHHl5CH5i4w)
+
+## Team Members:
+- Jamie Liu
+- Xianjing Huang
+- Yijia Zhao
 
 ## Get Started
 
@@ -19,6 +30,10 @@ These services work together to form a stable and efficient microservices applic
 ![AirSense-design](/airsense_diagram.png)
 
 ## Services
+The application is deployed on AWS App Runner 
+and can be accessed using the following link:
+
+[https://watgt5vczp.us-east-2.awsapprunner.com](https://watgt5vczp.us-east-2.awsapprunner.com)
 
 ### AirGateway
 
@@ -130,11 +145,18 @@ pip install --no-cache-dir -r requirements.txt
 python3 shared/tests/connect_aws_rds.py
 ```
 
+### Logging
+We use AWS CloudWatch for logging. AWS CloudWatch is a 
+monitoring and observability service provided by AWS. 
+It helps track the performance and health of AWS resources and applications.
+
+<img src="/imgs/log01.png" alt="1" style="width:600px;">
+
 ## Load Test - Quantitative Assessment
 We use **Locust** test to load test for our Flask app. 
 This is a useful platform for testing web application. 
 It helps us assess how our web application handles increased requests. 
-The code for running Locust test in stored in locustfile.py. 
+The code for running Locust test in stored in `locustfile.py`. 
 To run this, use `pip install locust` to install locust on codespace or local machine. 
 Then run locust command to run the web version locust test. 
 This can be used within the link provided by running the command.
@@ -142,15 +164,28 @@ This can be used within the link provided by running the command.
 We use AWS app runner for auto-scaling which automatically scale up based on the amount of user requests. 
 - Concurrency: 100 requests per instance
 - Instance Size: 1-25 instances
-1000 Requests has ?? successful cases and ?? failed cases, success rate ?? 
-RPS: 
+- Virtual CPU & memory: 1 vCPU & 2 GB
 
-10000 Requests has ?? successful cases and ?? failed cases, success rate ??
-RPS:
+**1000 users, spawn-rate 50**:
 
-The service didn't achieve 10000 successful requests per second. I think its due to several reasons:
-- The aws concurrency limits.
-- python scripts concurrent requests delay: creating 10000 threads to send testing requests costs a lot
+<img src="/imgs/load01.png" alt="1" style="width:600px;">
+
+<img src="/imgs/load02.png" alt="2" style="width:600px;">
+
+When 1,000 users sent 23,223 requests, the success rate was 100%, and the app's RPS (Requests Per Second) remained stable at around 320.
+
+**6000 users, spawn-rate 50**:
+
+<img src="/imgs/load03.png" alt="3" style="width:600px;">
+
+<img src="/imgs/load04.png" alt="4" style="width:600px;">
+
+When 6,000 users sent 70,964 requests, the success rate was 100%, and the app's RPS (Requests Per Second) remained stable at around 630.
+
+The service didn't achieve 10,000 RPS. Here are the potential reasons:
+- Autoscaling Delays: App Runner may not scale fast enough to handle the sudden spike in traffic to achieve 10,000 RPS.
+- Compute and Memory: Insufficient compute (CPU) or memory on the instances can cause the application to slow down or fail under heavy load.
+- Threading/Concurrency: Limited use of asynchronous programming or threading can restrict performance under heavy load.
 
 ## CI/CD Pipeline
 CI/CD, short for Continuous Integration and Continuous Delivery, 
@@ -186,3 +221,7 @@ Resources:
         ImageRepository:
         ...
 ```
+
+## Reflections
+All reflections including team member self reflection files and 
+team reflection after meeting are included in the `Team_Reflections` folder in this repository.

@@ -55,3 +55,4 @@ ruff
 black
 pytest
 pytest-cov
+locust
