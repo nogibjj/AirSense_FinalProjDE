@@ -22,6 +22,36 @@
     <div id="results-container" style="margin-top:30px;">
         <!-- Results will be displayed here -->
     </div>
+    <div class="query-result" style="margin-top:20px; text-align:center; font-family:monospace;">
+        <p><strong>SQL Query:</strong></p>
+        <pre style="background-color:#f4f4f4; padding:10px; border-radius:5px; display:inline-block;">
+    SELECT * 
+    FROM courses 
+    WHERE institution = 'Duke University' 
+      AND most_favorite = TRUE
+        </pre>
+        <p><strong>Found one record:</strong></p>
+        <table style="margin: 0 auto; border-collapse: collapse; width: 50%;">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Course Code</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Course Name</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Institution</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Favorite</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;">IDS 706</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">
+                        Data Engineering Systems</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">Duke University</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">True</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
 </div>
 
 <script>
@@ -51,7 +81,7 @@ async function performSearch() {
         let html = "";
         for (const [key, value] of Object.entries(data)) {
             html += `<h2>${key.replace(/_/g, ' ').toUpperCase()}</h2>`;
-            html += renderTable(value);
+            html += renderTable(value, query);
         }
 
         resultsContainer.innerHTML = html;
@@ -60,11 +90,15 @@ async function performSearch() {
     }
 }
 
-function renderTable(data) {
+function renderTable(data, query) {
     let html = "<table style='width:100%; border-collapse:collapse; text-align:left;'>";
     html += "<thead><tr>" + data.columns.map(col => `<th style='border-bottom:2px solid #ccc;'>${col}</th>`).join("") + "</tr></thead>";
     html += "<tbody>" + data.rows.map(row => {
-        return "<tr>" + data.columns.map(col => `<td style='padding:8px; border-bottom:1px solid #eee;'>${row[col]}</td>`).join("") + "</tr>";
+        return "<tr>" + data.columns.map(col => {
+            const cellValue = row[col];
+            const isHighlighted = typeof cellValue === "string" || typeof cellValue === "number" ? cellValue.toString().includes(query) : false;
+            return `<td style='padding:8px; border-bottom:1px solid #eee; ${isHighlighted ? "background-color:yellow;" : ""}'>${cellValue}</td>`;
+        }).join("") + "</tr>";
     }).join("") + "</tbody>";
     html += "</table>";
 
