@@ -47,17 +47,11 @@ async function performSearch() {
 
         const data = await response.json();
 
-        // Render results
+        // Render results dynamically for all available tables
         let html = "";
-
-        if (data.airline_performance) {
-            html += "<h2>Airline Performance</h2>";
-            html += renderTable(data.airline_performance);
-        }
-
-        if (data.busiest_airports_by_delays) {
-            html += "<h2>Busiest Airports by Delays</h2>";
-            html += renderTable(data.busiest_airports_by_delays);
+        for (const [key, value] of Object.entries(data)) {
+            html += `<h2>${key.replace(/_/g, ' ').toUpperCase()}</h2>`;
+            html += renderTable(value);
         }
 
         resultsContainer.innerHTML = html;
