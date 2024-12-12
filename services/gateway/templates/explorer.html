@@ -59,10 +59,18 @@
         const apiEndpoint = document.getElementById('api-endpoint-link');
         const openApiButton = document.getElementById('open-api');
 
+        let currentOrderBy = "";
+        let orderDirection = "ASC";
+
         const fetchTableData = () => {
             const tableName = document.getElementById('table-select').value;
             const limit = document.getElementById('limit-select').value;
-            const endpoint = `/api/dynamic_query?table_name=${tableName}&limit=${limit}`;
+            let endpoint = `/api/dynamic_query?table_name=${tableName}&limit=${limit}`;
+
+            if (currentOrderBy) {
+                endpoint += `&order_by=${currentOrderBy}&order_direction=${orderDirection}`;
+            }
+
             apiEndpoint.textContent = endpoint;
             apiEndpoint.style.color = '#4CAF50';
             openApiButton.onclick = () => window.open(endpoint, '_blank');
@@ -84,6 +92,23 @@
                             th.style.padding = '10px';
                             th.style.border = '1px solid #ddd';
                             th.style.backgroundColor = '#f4f4f9';
+                            th.style.cursor = 'ns-resize';
+                            th.title = 'Click to sort';
+                            th.onclick = () => {
+                                if (currentOrderBy === key) {
+                                    orderDirection = orderDirection === "ASC" ? "DESC" : "ASC";
+                                } else {
+                                    currentOrderBy = key;
+                                    orderDirection = "ASC";
+                                }
+                                fetchTableData();
+                            };
+                            th.onmouseover = () => {
+                                th.style.textDecoration = "underline";
+                            };
+                            th.onmouseout = () => {
+                                th.style.textDecoration = "none";
+                            };
                             headerRow.appendChild(th);
                         });
                         tableHeader.appendChild(headerRow);

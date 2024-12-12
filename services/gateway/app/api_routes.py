@@ -8,7 +8,7 @@ def create_api_routes(db):
     def dynamic_query():
         """
         Execute a dynamic SQL query based on the query string parameters.
-        e.g. /api/dynamic_query?table_name=airline_performance&columns=col1,col2&limit=5&where=column1:value1
+        e.g. /api/dynamic_query?table_name=airline_performance&columns=col1,col2&limit=5&where=column1:value1&order_by=col1&order_direction=ASC
         """
         try:
             # Retrieve parameters from the query string
@@ -16,10 +16,15 @@ def create_api_routes(db):
             columns = request.args.get("columns", "*")
             where_clause = request.args.get("where")
             order_by = request.args.get("order_by")
+            order_direction = request.args.get("order_direction", "ASC").upper()
             limit = request.args.get("limit", type=int)
 
             if not table_name:
                 return jsonify({"message": "Parameter 'table_name' is required!"}), 400
+
+            # Validate order_direction
+            if order_direction not in ["ASC", "DESC"]:
+                return jsonify({"message": "Invalid value for 'order_direction'. Must be 'ASC' or 'DESC'."}), 400
 
             # Build the dynamic SQL query
             query = f"SELECT {columns} FROM {table_name}"
@@ -36,7 +41,7 @@ def create_api_routes(db):
                     query += f" WHERE {' AND '.join(formatted_conditions)}"
 
             if order_by:
-                query += f" ORDER BY \"{order_by}\""
+                query += f" ORDER BY \"{order_by}\" {order_direction}"
 
             if limit:
                 query += f" LIMIT {limit}"
