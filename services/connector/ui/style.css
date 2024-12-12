@@ -39,19 +39,21 @@ body {
 .container {
     flex: 1;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    flex-direction: row;
     padding: 20px;
     box-sizing: border-box;
+    gap: 20px;
 }
 
-h1 {
-    margin-bottom: 20px;
+.left-section, .right-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 table {
-    width: 80%;
+    width: 90%;
     border-collapse: collapse;
     margin-top: 20px;
     text-align: left;
@@ -81,4 +83,25 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+form {
+    width: 90%;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.status {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    width: 90%;
 }
