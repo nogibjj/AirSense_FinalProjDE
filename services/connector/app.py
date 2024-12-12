@@ -1,3 +1,4 @@
+import logging
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -185,3 +186,24 @@ async def read_rdsstatus(session: Session = Depends(get_rds_session)):
         return {"RDS is connected": True, "result": str(result)}
     except Exception as e:
         return {"RDS is connected": False, "error": str(e)}
+    
+@app.get("/service_transfer")
+async def read_service_transfer(session: Session = Depends(get_rds_session)):
+    """Fetch the service transfer table."""
+    try:
+        # Fetch the data
+        query = f"SELECT * FROM service_transfer;"
+        result = await run_query(session, query)
+
+        # Fetch column names
+        columns_query = f"SELECT column_name FROM information_schema.columns WHERE table_name = 'service_transfer';"
+        
+        columns_result = await run_query(session, columns_query)
+        columns = [col[0] for col in columns_result]
+
+        # Convert result to a list of dictionaries
+        table_data = [dict(zip(columns, row)) for row in result]
+
+        return {"data": table_data, "columns": columns, "count": len(result), "success": True}
+    except Exception as e:
+        return {"error": str(e)}
