@@ -5,7 +5,7 @@ def create_html_routes(db):
 
     @html_bp.route("/")
     def home():
-        return render_template("base.html")
+        return render_template("home.html")
     
     @html_bp.route("/explorer", methods=["GET"])
     def show_explorer():

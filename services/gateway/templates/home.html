@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="search-container" style="text-align:center; margin-top:50px;">
+    <h1>Advanced Search</h1>
+    <form id="search-form" onsubmit="return performSearch();">
+        <input 
+            type="text" 
+            id="query-input" 
+            placeholder="Enter your query here..." 
+            style="width:50%; padding:10px; font-size:16px;" 
+            required
+        >
+        <button 
+            type="submit" 
+            style="padding:10px 20px; font-size:16px; cursor:pointer;">
+            Amazing ↵
+        </button>
+    </form>
+    <div id="results-container" style="margin-top:30px;">
+        <!-- Results will be displayed here -->
+    </div>
+</div>
+
+<script>
+async function performSearch() {
+    event.preventDefault();
+
+    const query = document.getElementById("query-input").value;
+    const resultsContainer = document.getElementById("results-container");
+    resultsContainer.innerHTML = "<p>Loading...</p>";
+
+    try {
+        const response = await fetch("/api/advanced_search", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ query })
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch results");
+        }
+
+        const data = await response.json();
+
+        // Render results
+        let html = "";
+
+        if (data.airline_performance) {
+            html += "<h2>Airline Performance</h2>";
+            html += renderTable(data.airline_performance);
+        }
+
+        if (data.busiest_airports_by_delays) {
+            html += "<h2>Busiest Airports by Delays</h2>";
+            html += renderTable(data.busiest_airports_by_delays);
+        }
+
+        resultsContainer.innerHTML = html;
+    } catch (error) {
+        resultsContainer.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+    }
+}
+
+function renderTable(data) {
+    let html = "<table style='width:100%; border-collapse:collapse; text-align:left;'>";
+    html += "<thead><tr>" + data.columns.map(col => `<th style='border-bottom:2px solid #ccc;'>${col}</th>`).join("") + "</tr></thead>";
+    html += "<tbody>" + data.rows.map(row => {
+        return "<tr>" + data.columns.map(col => `<td style='padding:8px; border-bottom:1px solid #eee;'>${row[col]}</td>`).join("") + "</tr>";
+    }).join("") + "</tbody>";
+    html += "</table>";
+
+    return html;
+}
+</script>
+{% endblock %}
