@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Explorer{% endblock %}
+
+{% block content %}
+    <h1>Database Table Explorer</h1>
+
+    <label for="table-select" style="display: block; text-align: center; margin: 20px;">Select Table:</label>
+    <select id="table-select" style="display: block; margin: 0 auto 20px; max-width: 300px; padding: 5px; font-size: 16px;">
+        <option value="" disabled selected>Select a table</option>
+    </select>
+
+    <div class="api-link">
+        <p id="api-endpoint">API Endpoint: <span id="api-endpoint-link" style="font-weight: bold;"></span></p>
+        <button id="open-api" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-size: 16px;">Open API in New Tab</button>
+    </div>
+
+    <table id="data-table" border="1" style="margin: 20px auto; width: 90%; max-width: 800px; border-collapse: collapse; text-align: left;">
+        <thead id="table-header" style="background-color: #4CAF50; color: #000;"></thead>
+        <tbody id="table-body"></tbody>
+    </table>
+
+    <script>
+        // Populate table list
+        fetch('/api/dynamic_query?table_name=information_schema.tables&columns=table_name&where=table_schema:public')
+            .then(response => response.json())
+            .then(data => {
+                const tableSelect = document.getElementById('table-select');
+                data.forEach(table => {
+                    const option = document.createElement('option');
+                    option.value = table.table_name;
+                    option.textContent = table.table_name;
+                    tableSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error("Error fetching table list:", error));
+
+        // Fetch table data and update API endpoint
+        const apiEndpoint = document.getElementById('api-endpoint-link');
+        const openApiButton = document.getElementById('open-api');
+
+        document.getElementById('table-select').addEventListener('change', function () {
+            const tableName = this.value;
+            const endpoint = `/api/dynamic_query?table_name=${tableName}`;
+            apiEndpoint.textContent = endpoint;
+            apiEndpoint.style.color = '#4CAF50';
+            openApiButton.onclick = () => window.open(endpoint, '_blank');
+
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    const tableHeader = document.getElementById('table-header');
+                    const tableBody = document.getElementById('table-body');
+                    tableHeader.innerHTML = '';
+                    tableBody.innerHTML = '';
+
+                    if (data.length > 0) {
+                        // Populate headers
+                        const headerRow = document.createElement('tr');
+                        Object.keys(data[0]).forEach(key => {
+                            const th = document.createElement('th');
+                            th.textContent = key;
+                            th.style.padding = '10px';
+                            th.style.border = '1px solid #ddd';
+                            th.style.backgroundColor = '#f4f4f9';
+                            headerRow.appendChild(th);
+                        });
+                        tableHeader.appendChild(headerRow);
+
+                        // Populate rows
+                        data.forEach(row => {
+                            const rowElement = document.createElement('tr');
+                            Object.values(row).forEach(value => {
+                                const td = document.createElement('td');
+                                td.textContent = value;
+                                td.style.padding = '10px';
+                                td.style.border = '1px solid #ddd';
+                                rowElement.appendChild(td);
+                            });
+                            tableBody.appendChild(rowElement);
+                        });
+                    } else {
+                        const noDataRow = document.createElement('tr');
+                        const noDataCell = document.createElement('td');
+                        noDataCell.textContent = 'No data available';
+                        noDataCell.colSpan = 1;
+                        noDataCell.style.textAlign = 'center';
+                        noDataRow.appendChild(noDataCell);
+                        tableBody.appendChild(noDataRow);
+                    }
+                })
+                .catch(error => console.error("Error fetching table data:", error));
+        });
+    </script>
+{% endblock %}

@@ -6,6 +6,10 @@ def create_html_routes(db):
     @html_bp.route("/")
     def home():
         return render_template("base.html")
+    
+    @html_bp.route("/explorer", methods=["GET"])
+    def show_explorer():
+        return render_template("explorer.html")
 
     @html_bp.route("/tables", methods=["GET"])
     def show_tables():
