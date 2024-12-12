@@ -1,15 +1,23 @@
-from typing import Union
 
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+from databricks import get_db_session, create_databricks_engine
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_databricks_engine()
+    print("Startup checklist finished")
+    yield
+    print("Shutdown checklist finished")
 
+app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/query")
+def run_query(query: str, session: Session = Depends(get_db_session)):
+    results = session.execute("SHOW TABLES").fetchall()
+    return results
