@@ -5,10 +5,17 @@
 {% block content %}
     <h1>Chatbot</h1>
 
-    <div id="chat-container" style="max-width: 600px; margin: 20px auto; border: 1px solid #4CAF50; border-radius: 5px;">
-        <div id="chat-box" style="height: 300px; overflow-y: auto; border-bottom: 1px solid #ddd; padding: 10px; background-color: #f9f9f9;">
+    <div id="chat-container" style="max-width: 1000px; margin: 20px auto; border: 1px solid #4CAF50; border-radius: 5px;">
+        <div id="chat-box" style="height: 350px; overflow-y: auto; border-bottom: 1px solid #ddd; padding: 10px; background-color: #f9f9f9;">
             <!-- Chat messages will appear here -->
         </div>
+
+        <!-- Loading Icon -->
+        <div id="loading-icon" style="display: none; text-align: center; margin: 10px;">
+            <span style="font-size: 24px;">⏳</span>
+        </div>
+
+
         <div id="input-container" style="display: flex; padding: 10px;">
             <input type="text" id="message-input" placeholder="Type your message..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;">
             <button id="send-button" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-size: 16px; margin-left: 10px;">Send</button>
@@ -19,6 +26,7 @@
         const chatBox = document.getElementById('chat-box');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
+        const loadingIcon = document.getElementById('loading-icon');
 
         sendButton.addEventListener('click', async () => {
             const userMessage = messageInput.value.trim();
@@ -29,6 +37,9 @@
 
             // Clear the input box
             messageInput.value = '';
+
+            // Show the loading icon
+            loadingIcon.style.display = 'block';
 
             try {
                 // Send message to the Flask backend
@@ -50,6 +61,9 @@
                 }
             } catch (error) {
                 addMessage('Error: Unable to contact server', 'bot');
+            } finally {
+                // Hide the loading icon
+                loadingIcon.style.display = 'none';
             }
         });
 
