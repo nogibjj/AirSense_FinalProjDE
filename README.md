@@ -129,3 +129,60 @@ pip install --no-cache-dir -r requirements.txt
 ```python3
 python3 shared/tests/connect_aws_rds.py
 ```
+
+## Load Test - Quantitative Assessment
+We use **Locust** test to load test for our Flask app. 
+This is a useful platform for testing web application. 
+It helps us assess how our web application handles increased requests. 
+The code for running Locust test in stored in locustfile.py. 
+To run this, use `pip install locust` to install locust on codespace or local machine. 
+Then run locust command to run the web version locust test. 
+This can be used within the link provided by running the command.
+
+We use AWS app runner for auto-scaling which automatically scale up based on the amount of user requests. 
+- Concurrency: 100 requests per instance
+- Instance Size: 1-25 instances
+1000 Requests has ?? successful cases and ?? failed cases, success rate ?? 
+RPS: 
+
+10000 Requests has ?? successful cases and ?? failed cases, success rate ??
+RPS:
+
+The service didn't achieve 10000 successful requests per second. I think its due to several reasons:
+- The aws concurrency limits.
+- python scripts concurrent requests delay: creating 10000 threads to send testing requests costs a lot
+
+## CI/CD Pipeline
+CI/CD, short for Continuous Integration and Continuous Delivery, 
+refers to a set of practices aimed at automating the processes of building, testing, and deploying code. 
+The purpose of CI/CD is to streamline the integration and testing of code changes 
+while ensuring the continuous delivery of updated software versions.
+
+This repository implements a CI/CD pipeline that is triggered 
+whenever changes are pushed to the master branch. 
+The pipeline is configured in the `.github/workflows` directory, 
+which contains several files, each outlining specific jobs in the process. 
+These jobs include installing dependencies, linting, formatting code, and running tests. 
+The badges displayed at the top of the README indicate that all jobs in the pipeline are 
+currently running successfully.
+
+## Infrastructure as Code (IaC)
+To further streamline our deployment process and ensure consistent, repeatable setups, 
+we integrate Infrastructure as Code (IaC) practices using CloudFormation.
+
+AWS CloudFormation is a service that helps model and set up AWS resources using infrastructure as code. 
+With CloudFormation, we define our infrastructure in a YAML template `cloudformation.yaml`, 
+and AWS takes care of provisioning and managing those resources for us.
+```
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Deploy Flask App using CloudFormation
+
+Resources:
+  FlaskAppRunnerService:
+    Type: AWS::AppRunner::Service
+    Properties:
+      ServiceName: "airsense"
+      SourceConfiguration:
+        ImageRepository:
+        ...
+```

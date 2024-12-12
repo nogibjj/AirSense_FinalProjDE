@@ -1,11 +1,11 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Deploy Flask App on AWS App Runner using CloudFormation
+Description: Deploy Flask App using CloudFormation
 
 Resources:
   FlaskAppRunnerService:
     Type: AWS::AppRunner::Service
     Properties:
-      ServiceName: "apptest1"
+      ServiceName: "airsense"
       SourceConfiguration:
         ImageRepository:
           ImageIdentifier: "381492212823.dkr.ecr.us-east-2.amazonaws.com/xh/final01:latest" 
