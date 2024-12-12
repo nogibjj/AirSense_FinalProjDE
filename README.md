@@ -21,6 +21,7 @@ These services work together to form a stable and efficient microservices applic
 `AirGateway` is powered by Flask and aims to handle users' and administrators' restful API requests and forward them to proper mircro-services (`AirConnector`, `AirStore`). It has the ability to handle at least 10,000 requests per seconds.
 
 - Test connectivity with `AirConnector`: `curl [host_uri]/connector`
+- Test query: `/api/dynamic_query?table_name=busiest_airports_by_delays&limit=6&where=Avg_Departure_Delay:87,Total_Arrivals:4`
 
 ### AirBroker
 

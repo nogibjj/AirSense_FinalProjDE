@@ -14,4 +14,5 @@ COPY . .
 EXPOSE 5000
 
 # Set the entry point to run the app
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:create_app()", \
+    "--workers", "4", "--preload"]
