@@ -20,6 +20,8 @@ These services work together to form a stable and efficient microservices applic
 
 `AirGateway` is powered by Flask and aims to handle users' and administrators' restful API requests and forward them to proper mircro-services (`AirConnector`, `AirStore`). It has the ability to handle at least 10,000 requests per seconds.
 
+- Test connectivity with `AirConnector`: `curl [host_uri]/connector`
+
 ### AirBroker
 
 `AirBroker` leverages databricks to preprocess data and generate final data tables that will be ready use for `AirGateway`.
@@ -27,6 +29,8 @@ These services work together to form a stable and efficient microservices applic
 ### AirConnector
 
 `AirConnector` connectes `AirBroker` and `AirStore`. It transfers data tables from databricks to `AirStore` and ready for query by `AirGateway`.
+
+- To transfer: `curl -X POST "[host_uri]:8000/transfer_table?table_name=delays_by_day"`
 
 ### AirStore
 
@@ -78,7 +82,7 @@ AirSense/
 
 **Attn: If develope under docker, you dont have to use any python virtual environment mentioned below, as each image has its own environment in docker engine, which is highly recommened.**
 
-- Instructions for set up [Docker Engine](https://docs.docker.com/engine/install/) and [Desktop](https://docs.docker.com/desktop/). 
+- Instructions for set up [Docker Engine](https://docs.docker.com/engine/install/) and [Desktop](https://docs.docker.com/desktop/).
 
 ```bash
 docker compose build
@@ -89,7 +93,7 @@ docker compose up
 
 **Attn: If you would like to test functions locally, please follow instructions below.**
 
-- *please use Python3 version `3.12.8` and usage of `pyenv` and virtual environment is highly recommended.*
+- _please use Python3 version `3.12.8` and usage of `pyenv` and virtual environment is highly recommended._
 
 #### Install Python using Pyenv [https://github.com/pyenv/pyenv](https://github.com/pyenv/pyenv)
 
