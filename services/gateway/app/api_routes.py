@@ -1,31 +1,75 @@
 from flask import Blueprint, jsonify, request
-from sqlalchemy import text
+from sqlalchemy import text, inspect
 
 def create_api_routes(db):
     api_bp = Blueprint('api', __name__, url_prefix='/api')
+
+    @api_bp.route("/advanced_search", methods=["POST"])
+    def advanced_search():
+        """
+        Perform an advanced search across all tables for records matching the given search string.
+        Returns categorized results by table with rows and column names.
+        """
+        try:
+            search_query = request.json.get("query")
+
+            if not search_query:
+                return jsonify({"message": "Parameter 'query' is required!"}), 400
+
+            inspector = inspect(db.engine)
+            tables = inspector.get_table_names()
+
+            result_data = {}
+            
+            for table in tables:
+                columns = inspector.get_columns(table)
+                column_names = [col['name'] for col in columns]
+
+                where_clauses = []
+                for column in column_names:
+                    where_clauses.append(f"\"{column}\"::text ILIKE :search_query")
+                
+                query = f"SELECT * FROM \"{table}\" WHERE {' OR '.join(where_clauses)}"
+
+                result = db.session.execute(text(query), {"search_query": f"%{search_query}%"})
+                rows = result.fetchall()
+
+                if rows:
+                    result_data[table] = {
+                        "columns": column_names,
+                        "rows": [dict(zip(result.keys(), row)) for row in rows]
+                    }
+
+            if not result_data:
+                return jsonify({"message": "No matching records found."}), 404
+
+            return jsonify(result_data)
+
+        except Exception as e:
+            return jsonify({"message": "Failed to execute advanced search!", "error": str(e)}), 500
 
     @api_bp.route("/dynamic_query", methods=["GET"])
     def dynamic_query():
         """
         Execute a dynamic SQL query based on the query string parameters.
-        e.g. /api/dynamic_query?table_name=airline_performance&columns=col1,col2&limit=5&where=column1:value1
         """
         try:
-            # Retrieve parameters from the query string
             table_name = request.args.get("table_name")
             columns = request.args.get("columns", "*")
             where_clause = request.args.get("where")
             order_by = request.args.get("order_by")
+            order_direction = request.args.get("order_direction", "ASC").upper()
             limit = request.args.get("limit", type=int)
 
             if not table_name:
                 return jsonify({"message": "Parameter 'table_name' is required!"}), 400
 
-            # Build the dynamic SQL query
+            if order_direction not in ["ASC", "DESC"]:
+                return jsonify({"message": "Invalid value for 'order_direction'. Must be 'ASC' or 'DESC'."}), 400
+
             query = f"SELECT {columns} FROM {table_name}"
 
             if where_clause:
-                # Process where_clause with proper quoting for column names
                 conditions = where_clause.split(",")
                 formatted_conditions = []
                 for condition in conditions:
@@ -36,19 +80,18 @@ def create_api_routes(db):
                     query += f" WHERE {' AND '.join(formatted_conditions)}"
 
             if order_by:
-                query += f" ORDER BY \"{order_by}\""
+                query += f" ORDER BY \"{order_by}\" {order_direction}"
 
             if limit:
                 query += f" LIMIT {limit}"
 
-            # Use SQLAlchemy's text function to execute the query
             result = db.session.execute(text(query))
             rows = result.fetchall()
             column_names = result.keys()
 
-            # Format the results as a list of dictionaries
             data = [dict(zip(column_names, row)) for row in rows]
             return jsonify(data)
+
         except Exception as e:
             return jsonify({"message": "Failed to execute query!", "error": str(e)}), 500
 

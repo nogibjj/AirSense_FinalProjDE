@@ -1,5 +1,9 @@
 # AirSense - Insights of Flights
 
+## Get Started
+
+`docker compose up --build`
+
 ## Architectural Design
 
 ### Microservices Overview

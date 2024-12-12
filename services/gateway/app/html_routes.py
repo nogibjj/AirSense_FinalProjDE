@@ -5,10 +5,14 @@ def create_html_routes(db):
 
     @html_bp.route("/")
     def home():
-        return render_template("base.html")
+        return render_template("home.html")
+    
+    @html_bp.route("/explorer", methods=["GET"])
+    def show_explorer():
+        return render_template("explorer.html")
 
-    @html_bp.route("/tables", methods=["GET"])
-    def show_tables():
-        return render_template("tables.html")
+    @html_bp.route("/about", methods=["GET"])
+    def show_about():
+        return render_template("about.html")
 
     return html_bp

@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Table List{% endblock %}
+{% block title %}About{% endblock %}
 
 {% block content %}
 
-    <h1>Table List</h1>
+    <h1>About</h1>
+
+    <h2 style="text-align: center;">Tables Processed and Stored</h2>
     <ul id="table-list">
         <!-- Table list will be populated here -->
     </ul>
@@ -13,6 +15,9 @@
         <p><a href="/api/dynamic_query?table_name=information_schema.tables&columns=table_name&where=table_schema:public" target="_blank">View API Endpoint</a></p>
         <p>API: /api/dynamic_query?table_name=information_schema.tables&columns=table_name&where=table_schema:public </p>
     </div>
+
+    <h2 style="text-align: center;">Software</h2>
+    <p style="text-align: center;">This service is powered by Python, Flask, and PostgreSQL.</p>
 
     <script>
         fetch('/api/dynamic_query?table_name=information_schema.tables&columns=table_name&where=table_schema:public')

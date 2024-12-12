@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="search-container" style="text-align:center; margin-top:50px;">
+    <h1>Advanced Search</h1>
+    <form id="search-form" onsubmit="return performSearch();">
+        <input 
+            type="text" 
+            id="query-input" 
+            placeholder="Enter your query here..." 
+            style="width:50%; padding:10px; font-size:16px;" 
+            required
+        >
+        <button 
+            type="submit" 
+            style="padding:10px 20px; font-size:16px; cursor:pointer;">
+            Amazing ↵
+        </button>
+    </form>
+    <div id="results-container" style="margin-top:30px;">
+        <!-- Results will be displayed here -->
+    </div>
+    <div class="query-result" style="margin-top:20px; text-align:center; font-family:monospace;">
+        <p><strong>SQL Query:</strong></p>
+        <pre style="background-color:#f4f4f4; padding:10px; border-radius:5px; display:inline-block;">
+    SELECT * 
+    FROM courses 
+    WHERE institution = 'Duke University' 
+      AND most_favorite = TRUE
+        </pre>
+        <p><strong>Found one record:</strong></p>
+        <table style="margin: 0 auto; border-collapse: collapse; width: 50%;">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Course Code</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Course Name</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Institution</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Favorite</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;">IDS 706</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">
+                        Data Engineering Systems</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">Duke University</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">True</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+</div>
+
+<script>
+async function performSearch() {
+    event.preventDefault();
+
+    const query = document.getElementById("query-input").value;
+    const resultsContainer = document.getElementById("results-container");
+    resultsContainer.innerHTML = "<p>Loading...</p>";
+
+    try {
+        const response = await fetch("/api/advanced_search", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ query })
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch results");
+        }
+
+        const data = await response.json();
+
+        // Render results dynamically for all available tables
+        let html = "";
+        for (const [key, value] of Object.entries(data)) {
+            html += `<h2>${key.replace(/_/g, ' ').toUpperCase()}</h2>`;
+            html += renderTable(value, query);
+        }
+
+        resultsContainer.innerHTML = html;
+    } catch (error) {
+        resultsContainer.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+    }
+}
+
+function renderTable(data, query) {
+    let html = "<table style='width:100%; border-collapse:collapse; text-align:left;'>";
+    html += "<thead><tr>" + data.columns.map(col => `<th style='border-bottom:2px solid #ccc;'>${col}</th>`).join("") + "</tr></thead>";
+    html += "<tbody>" + data.rows.map(row => {
+        return "<tr>" + data.columns.map(col => {
+            const cellValue = row[col];
+            const isHighlighted = typeof cellValue === "string" || typeof cellValue === "number" ? cellValue.toString().includes(query) : false;
+            return `<td style='padding:8px; border-bottom:1px solid #eee; ${isHighlighted ? "background-color:yellow;" : ""}'>${cellValue}</td>`;
+        }).join("") + "</tr>";
+    }).join("") + "</tbody>";
+    html += "</table>";
+
+    return html;
+}
+</script>
+{% endblock %}
