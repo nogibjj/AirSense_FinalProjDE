@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirConnector Admin</title>
+    <link rel="stylesheet" href="/ui/style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>DB Status</h2>
+        <div class="db-status">
+            <div id="databricks-dot" class="dot"></div>
+            <span>Databricks</span>
+        </div>
+        <div class="db-status">
+            <div id="rds-dot" class="dot"></div>
+            <span>RDS</span>
+        </div>
+        <button id="check-status">Check Status</button>
+    </div>
+
+    <div class="container">
+        <div class="left-section">
+            <h1>
+                <img src="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*Sk7m2to8qv-N-hMII4T5jw.png" alt="RDS Icon" class="icon", height="50px">
+                History of AirStore (RDS) Updates
+            </h1>
+            <button id="update-table">Update Table</button>
+            <table id="service-transfer-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Table Name</th>
+                        <th>Last Transfer Date</th>
+                        <th>Transfer Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4">No data available. Click "Update Table" to load data.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="right-section">
+            <h1>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Databricks_Logo.png/440px-Databricks_Logo.png" alt="Databricks Icon" class="icon" height="50px">
+                Fetch from AirBroker to AirStore
+            </h1>
+            <form id="transfer-form">
+                <label for="table-name">Table Name:</label>
+                <input type="text" id="table-name" name="table_name" placeholder="Enter table name" required>
+                <button type="submit">Transfer Table</button>
+            </form>
+            <div class="status" id="transfer-status">
+                <strong>Status:</strong> Waiting for action...
+            </div>
+        </div>
+    </div>
+    <script src="/ui/script.js"></script>
+</body>
+</html>
