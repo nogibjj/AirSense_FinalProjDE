@@ -1,9 +1,8 @@
 import os
 from flask import Blueprint, jsonify, request
 from sqlalchemy import text, inspect
-from openai import OpenAI
 
-def create_api_routes(db):
+def create_api_routes(db, client):
     api_bp = Blueprint('api', __name__, url_prefix='/api')
 
     @api_bp.route("/chat", methods=["POST"])
@@ -11,13 +10,7 @@ def create_api_routes(db):
         """
         Handle chat requests and return responses from OpenAI.
         """
-        openai_api_key = os.getenv("OPENAI_API_KEY")
-        if not openai_api_key:
-            return jsonify({"message": "OpenAI API key is missing!"}), 500
-        print(openai_api_key)
-        client = OpenAI(openai_api_key)
         user_message = request.json.get("message", "")
-
         if not user_message:
             return jsonify({"message": "Parameter 'message' is required!"}), 400
 
