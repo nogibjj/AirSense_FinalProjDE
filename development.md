@@ -6,37 +6,32 @@ For developer: view and manage [AWS Aurora Database](https://us-east-1.console.a
 
 ```
 AirSense/
+├── shared/
+│   ├── tests/
+├── services/
+│   ├── gateway/
+│   │   ├── app/
+│   │   │   ├── __init__.py
+│   │   │   ├── routes.py
+│   │   ├── run.py
+│   │   ├── Dockerfile
+│   │   ├── requirements.txt
+│   │   └── templates/
+│   │       ├── home.html
+│   └── connector/
+│       ├── app.py
+│       ├── Dockerfile
+│       ├── requirements.txt
+│       └── ui/
+│           ├── index.html
+├── .github
+├── cloudformation.yaml
+├── locustfile.py
+├── setup.sh
 ├── README.md
 ├── .gitignore
 ├── docker-compose.yml
 ├── requirements.txt
-├── shared/
-│   ├── utils/
-│   │   ├── __init__.py
-│   │   ├── logger.py
-│   │   ├── config.py
-│   ├── tests/
-├── services/
-│   ├── gateway/     # API Gateway microservice
-│   │   ├── app/
-│   │   │   ├── __init__.py
-│   │   │   ├── routes.py
-│   │   │   ├── config.py
-│   │   ├── Dockerfile
-│   │   ├── requirements.txt
-│   │   └── tests/
-│   │       ├── test_routes.py
-│   └── connector/
-│       ├── main.py
-│       ├── Dockerfile
-│       ├── requirements.txt
-│       └── tests/
-│           ├── test_connector.py
-├── tools/
-│   ├── .keep
-└── scripts/
-    ├── start_all.sh
-    ├── deploy.sh
 
 ```
 
