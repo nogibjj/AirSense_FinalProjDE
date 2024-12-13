@@ -7,7 +7,11 @@
 
 _AirSense is a microservices-based application designed to provide insights into flights, focusing on efficient data handling and scalability. The project combines several components to manage, preprocess, and serve flight-related data seamlessly. The system aims to process and respond to user queries about flights with high concurrency and reliability._
 
-## [YouTube Demo Video](https://youtu.be/FHHl5CH5i4w)
+## Demo Presentation
+
+[![Watch the video](https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+
+Alternative: Watch the video on [YouTube](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
 
 ## Team Members:
 
@@ -255,6 +259,6 @@ team reflection after meeting are included in the `Team_Reflections` folder in t
 
 - We used Copilot as frontend helper for the design of UI (html and css).
 
-## About
+### About
 
 ![about](/imgs/about.png)
