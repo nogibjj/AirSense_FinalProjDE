@@ -43,7 +43,7 @@ These services work together to form a stable and efficient microservices applic
 
 The application is deployed on AWS App Runner.
 
-![runner](/imgs/appRunner.png)
+<img src="/imgs/airsense-2.png" alt="airsense-2" style="width:70%;">
 
 #### AirGateway
 
@@ -58,6 +58,16 @@ Designed for **Publics**.
 
   `[host_uri]/api/dynamic_query?table_name=busiest_airports_by_delays&limit=6&where=Avg_Departure_Delay:87,Total_Arrivals:4`
 
+<div style="display: flex; justify-content: space-around;">
+  <img src="/imgs/home-1.png" alt="home-1" style="width:45%;">
+  <img src="/imgs/home-2.png" alt="home-2" style="width:45%;">
+</div>
+
+<div style="display: flex; justify-content: space-around;">
+  <img src="/imgs/explore-1.png" alt="explore-1" style="width:45%;">
+  <img src="/imgs/explore-2.png" alt="explore-2" style="width:45%;">
+</div>
+
 #### AirConnector
 
 Designed for **Administrator**.
@@ -71,7 +81,7 @@ Designed for **Administrator**.
 
   `curl -X POST "[host_uri]:8000/transfer_table?table_name=delays_by_day`
 
-<img src="/imgs/admin.png" alt="AdminDash" style="width:300px;">
+<img src="/imgs/admin.png" alt="AdminDash" style="width:600px;">
 
 ## Leveraging LLM for Chatbot
 
@@ -83,7 +93,7 @@ We have integrated an advanced chatbot powered by OpenAI's API. This allows user
 - **Real-time Responses**: Provides instant answers to user questions.
 - **Contextual Understanding**: Maintains context to handle follow-up questions effectively.
 
-<img src="/imgs/chat.png" alt="Chatbot" style="width:300px;">
+<img src="/imgs/chat.png" alt="Chatbot" style="width:600px;">
 
 ## Dependencies
 
