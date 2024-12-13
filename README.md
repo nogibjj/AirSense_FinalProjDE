@@ -33,6 +33,8 @@ Make sure Docker Engine is installed on your host machine, and just one command 
 
 - `AirStore`: A GraphSQL database hosted on AWS RDS Aurora, maintaining all flight-related data for query purposes.
 
+_Why AirConnector?_: It brings ready-to-ship data to AirStore, which is closer to our server. For a single query, users can query and get their results within **0.2 seconds** instead of **12 seconds** if fetching from `AirBroker` directly.
+
 These services work together to form a stable and efficient microservices application.
 
 ### Diagram
@@ -238,6 +240,20 @@ Resources:
 
 All reflections including team member self reflection files and
 team reflection after meeting are included in the `Team_Reflections` folder in this repository.
+
+## Others
+
+### Potential Areas for Improvement
+
+- Performance Optimization:
+  Adopt VPC and ECS for faster inner communication.
+
+- Enhanced Scalability:
+  Experiment with alternative scaling solutions like Kubernetes for container orchestration. Use Load balancer and Redis to distribute server workloads.
+
+### AI in Programing
+
+- We used Copilot as frontend helper for the design of UI (html and css).
 
 ## About
 
