@@ -9,9 +9,7 @@ _AirSense is a microservices-based application designed to provide insights into
 
 ## Demo Presentation
 
-[![Watch the video](https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg)](https://youtu.be/NeIFFpZz6kk)
-
-Alternative: Watch the video on [YouTube](https://youtu.be/NeIFFpZz6kk).
+Watch the video on [YouTube](https://youtu.be/NeIFFpZz6kk).
 
 ## Team Members:
 
