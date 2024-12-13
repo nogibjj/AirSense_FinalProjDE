@@ -37,7 +37,7 @@ These services work together to form a stable and efficient microservices applic
 
 ### Diagram
 
-![AirSense-design](/imgs/airsense_diagram.png)
+![AirSense-design](/imgs/airsense-2.png)
 
 ### Services
 
@@ -65,47 +65,71 @@ Designed for **Administrator**.
 - _Access using the following link:
   [https://pywepkfr9p.us-east-2.awsapprunner.com/](https://pywepkfr9p.us-east-2.awsapprunner.com/)_
 
-`AirConnector` connectes `AirBroker` and `AirStore`. It transfers data tables from databricks to `AirStore` and ready for query by `AirGateway`.
+`AirConnector` connectes `AirBroker` and `AirStore`. It transfers data tables from databricks to `AirStore` and ready for query by `AirGateway`. Administrator can check the status of two database services, manually transfer data, and see history of operations.
 
 - Transfering test example:
 
   `curl -X POST "[host_uri]:8000/transfer_table?table_name=delays_by_day`
 
-### Dependencies
+<img src="/imgs/admin.png" alt="AdminDash" style="width:300px;">
 
-1. Languages and Frameworks:
+## Leveraging LLM for Chatbot
 
-   - Python 3.12.8 with Flask and FastAPI for API handling.
+We have integrated an advanced chatbot powered by OpenAI's API. This allows users to interact with the application through natural language conversations. Users can ask questions and get insights about flights, data, and any concern while using this application
 
-   - SQL for querying and GraphSQL database for data storage.
+### Key Features:
 
-2. Tools and Services:
+- **Natural Language Processing**: Understands and processes user queries in plain English.
+- **Real-time Responses**: Provides instant answers to user questions.
+- **Contextual Understanding**: Maintains context to handle follow-up questions effectively.
 
-   - Databricks: For data processing.
+<img src="/imgs/chat.png" alt="Chatbot" style="width:300px;">
 
-   - Docker: Containerization of services for consistency and portability.
+## Dependencies
 
-   - AWS App Runner: For auto-scaling microservices.
+### Languages and Frameworks:
 
-   - AWS RDS Aurora: As the relational database solution.
+- Python 3.12.8
 
-   - Locust: For load testing Flask applications.
+- Flask: For powering `AirGateway` user interface and Restful API requests.
 
-   - CloudFormation: Infrastructure as Code for streamlined AWS resource provisioning.
+- FastAPI: For powering `AirConnector` and administrator interface.
 
-3. Development Tools:
+- Spark: For preprocessing raw data and outputting clean tables in Databricks.
 
-   - Pyenv: Python version management.
+- SQL: For querying and GraphSQL database for data storage.
 
-   - Virtual Environment: For dependency isolation during development.
+### Tools and Services:
 
-   - GitHub Actions: CI/CD pipelines for automated testing and deployment.
+- Databricks: For data preprocessing.
+
+- Docker: Containerization of services for consistency and portability.
+
+- AWS Elastic Container Registry (ECR): Store, manage, and deploy container images securely.
+
+- AWS App Runner: For auto-scaling microservices.
+
+- AWS RDS Aurora: As the relational database solution.
+
+- Locust: For load testing Flask applications.
+
+- CloudFormation: Infrastructure as Code for streamlined AWS resource provisioning.
+
+- CloudWatch: For monitoring and observability of AWS resources and applications.
+
+### Development Tools:
+
+- Pyenv: Python version management.
+
+- Virtual Environment: For dependency isolation during development.
+
+- GitHub Actions: CI/CD pipelines for automated testing and deployment.
 
 ## Development
 
 For details regarding repo structure and how to set up development environment, see [development.md](/development.md).
 
-### Logging
+## Logging
 
 We use AWS CloudWatch for logging. AWS CloudWatch is a
 monitoring and observability service provided by AWS.
