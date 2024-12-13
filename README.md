@@ -37,13 +37,13 @@ These services work together to form a stable and efficient microservices applic
 
 ### Diagram
 
-![AirSense-design](/imgs/airsense-2.png)
+<img src="/imgs/airsense-2.png" alt="airsense-2" style="width:70%;">
 
 ### Services
 
 The application is deployed on AWS App Runner.
 
-<img src="/imgs/airsense-2.png" alt="airsense-2" style="width:70%;">
+![runner](/imgs/appRunner.png)
 
 #### AirGateway
 
@@ -54,19 +54,30 @@ Designed for **Publics**.
 
 `AirGateway` is powered by Flask and aims to handle users' and administrators' restful API requests and forward them to proper mircro-services (`AirConnector`, `AirStore`). It has the ability to handle at least 10,000 requests per seconds.
 
-- Query test example:
-
-  `[host_uri]/api/dynamic_query?table_name=busiest_airports_by_delays&limit=6&where=Avg_Departure_Delay:87,Total_Arrivals:4`
+1. Users can utilize the advanced search function to query any keywords throughout the entire database, with results returned in milliseconds.
 
 <div style="display: flex; justify-content: space-around;">
   <img src="/imgs/home-1.png" alt="home-1" style="width:45%;">
   <img src="/imgs/home-2.png" alt="home-2" style="width:45%;">
 </div>
 
+2. Users can interact with an interactive database exploration tool, enabling them to view data by order, ascending, descending, limit, and more.
+
 <div style="display: flex; justify-content: space-around;">
   <img src="/imgs/explore-1.png" alt="explore-1" style="width:45%;">
   <img src="/imgs/explore-2.png" alt="explore-2" style="width:45%;">
 </div>
+
+3. Gateway also provides powerful query API portal, allowing user and other services query data via Restful API easily.
+
+<div style="display: flex; justify-content: space-around;">
+  <img src="/imgs/api-1.png" alt="api-1" style="width:45%;">
+  <img src="/imgs/api-2.png" alt="api-2" style="width:45%;">
+</div>
+
+Query test example:
+
+`[host_uri]/api/dynamic_query?table_name=busiest_airports_by_delays&limit=6&where=Avg_Departure_Delay:87,Total_Arrivals:4`
 
 #### AirConnector
 
@@ -227,3 +238,7 @@ Resources:
 
 All reflections including team member self reflection files and
 team reflection after meeting are included in the `Team_Reflections` folder in this repository.
+
+## About
+
+![about](/imgs/about.png)
