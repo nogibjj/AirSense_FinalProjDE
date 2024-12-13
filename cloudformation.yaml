@@ -8,7 +8,7 @@ Resources:
       ServiceName: "airsense"
       SourceConfiguration:
         ImageRepository:
-          ImageIdentifier: "381492212823.dkr.ecr.us-east-2.amazonaws.com/xh/final01:latest" 
+          ImageIdentifier: "381492212823.dkr.ecr.us-east-2.amazonaws.com/airsense_gateway:latest" 
           ImageRepositoryType: ECR
         AutoDeploymentsEnabled: true
       InstanceConfiguration:
