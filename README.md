@@ -243,7 +243,7 @@ Resources:
 ## Reflections
 
 All reflections including team member self reflection files and
-team reflection after meeting are included in the `Team_Reflections` folder in this repository.
+team reflection after meeting are included in the [Team_Reflections](/Team_Reflections) folder in this repository.
 
 ## Others
 
